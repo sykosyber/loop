@@ -28,8 +28,7 @@ a modern existentialist contemplation
 The piece features a moody, dark aesthetic with a generative particle system and a retro TV effect to create an immersive, thought-provoking experience.
 
 ### Live Demo
-
-**[You can find a live version of the project here.]**(https://sykosyber.github.io/loop/)
+https://sykosyber.github.io/loop/
 
 ### Features
 
