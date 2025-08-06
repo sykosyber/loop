@@ -1,9 +1,6 @@
 # loop
 a modern existentialist contemplation
 
-
-# LOOP
-
 ![Loop Animation](animation.gif)
 
 > **[ The Traveler arrives. The circuit hums. ]**
