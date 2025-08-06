@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Circular Journey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1f1f1f 0%, #0a0a0a 100%);
+            font-family: 'Roboto Mono', monospace;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .tv-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Allows clicks to go through it */
+            z-index: 101; /* Place it on top of everything, including the vignette */
+        }
+
+        /* Scan lines effect */
+        .tv-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            opacity: 0.8;
+        }
+
+        /* Animated static/noise effect */
+        .tv-overlay::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: radial-gradient(#fff 15%, transparent 16%),
+                              radial-gradient(#fff 15%, transparent 16%);
+            background-size: 3px 3px;
+            background-position: 0 0, 1.5px 1.5px;
+            opacity: 0.1;
+            animation: static-noise 1s steps(1) infinite;
+        }
+
+
+        .track-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+        }
+
+        .track {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid #404040;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 50px rgba(0, 255, 255, 0.15),
+                inset 0 0 50px rgba(0, 0, 0, 0.7),
+                0 0 100px rgba(0, 0, 0, 0.5);
+            background: radial-gradient(circle at center, transparent 98%, #303030 100%);
+        }
+
+        .rotor {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: rotate 12s linear infinite;
+            animation-play-state: paused;
+            /* FIX: Z-index added to place cart in front of monitor */
+            z-index: 20; 
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cart-wrapper {
+            position: absolute;
+            width: 50px;
+            height: 35px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cart {
+            width: 100%;
+            height: 25px;
+            background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 
+                0 3px 10px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        
+        /* RESTORED: Wheels CSS */
+        .wheel {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            bottom: -4px;
+            border: 1px solid #1a1a1a;
+            animation: wheelRotate 0.5s linear infinite;
+        }
+
+        .wheel.front { left: 8px; }
+        .wheel.back { right: 8px; }
+
+        @keyframes wheelRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .figure {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 30px;
+        }
+
+        .figure-head {
+            width: 18px;
+            height: 18px;
+            background: radial-gradient(circle at 40% 40%, #7a7a7a 0%, #5a5a5a 100%);
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 4px rgba(0,0,0,0.3);
+        }
+
+        .eye {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            top: 6px;
+            /* RESTORED: Blinking animation */
+            animation: blink 5s infinite;
+        }
+
+        /* RESTORED: Blinking Keyframes */
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        .eye.left { left: 4px; }
+        .eye.right { right: 4px; }
+
+        .figure-body {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(180deg, #6a6a6a 0%, #4a4a4a 100%);
+            margin: 2px auto 0;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .monitor-container {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .monitor {
+            width: 70px;
+            height: 50px;
+            background: linear-gradient(145deg, #2f2f2f 0%, #1a1a1a 100%);
+            border: 3px solid #3a3a3a;
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.4),
+                0 10px 30px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+
+        .monitor-screen {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            background: #050f0f;
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid #0a2a2a;
+        }
+
+        .monitor-glow {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, 
+                rgba(0, 255, 255, 0.3) 0%, 
+                rgba(0, 255, 255, 0.1) 40%, 
+                transparent 70%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .monitor-stand {
+            width: 25px;
+            height: 12px;
+            background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+            margin: 3px auto 0;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+        }
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(0,255,255,0.5) 50%, 
+                transparent 100%);
+            animation: scan 3s linear infinite;
+            opacity: 0.3;
+        }
+        @keyframes scan {
+            0% { top: -2px; }
+            100% { top: 100%; }
+        }
+        .dialogue-area {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 650px;
+            min-height: 80px;
+            padding: 20px;
+            background: linear-gradient(145deg, 
+                rgba(10, 10, 10, 0.9) 0%, 
+                rgba(20, 20, 20, 0.8) 100%);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.6s ease-in-out;
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+        }
+
+        .dialogue-area.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+        
+        .dialogue-text {
+            margin: 8px 0;
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 24px;
+        }
+
+        .dialogue-text.human { color: #9a9a9a; }
+        .dialogue-text.human::before { content: '> '; color: #6a6a6a; }
+        .dialogue-text.ai { color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.6); }
+        .dialogue-text.ai::before { content: '// '; color: rgba(0, 255, 255, 0.6); }
+        .center-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 60%; /* Adjust size as needed */
+            max-height: 60%; /* Adjust size as needed */
+            pointer-events: none; /* Allows clicks to pass through to elements behind */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="tv-overlay"></div>
+    <div class="track-container">
+        <div class="track"></div>
+        <img src="loop.png" alt="Center Loop Image" class="center-image">
+        <div class="rotor" id="rotor">
+            <div class="cart-wrapper">
+                <div class="cart">
+                     <div class="wheel front"></div>
+                     <div class="wheel back"></div>
+                </div>
+                <div class="figure">
+                    <div class="figure-head">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                    </div>
+                    <div class="figure-body"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="monitor-container">
+            <div class="monitor">
+                <div class="monitor-screen">
+                    <div class="monitor-glow"></div>
+                    <div class="scanline"></div>
+                </div>
+            </div>
+            <div class="monitor-stand"></div>
+        </div>
+    </div>
+
+    <div class="dialogue-area" id="dialogueArea">
+        <div class="dialogue-text human" id="humanText"></div>
+        <div class="dialogue-text ai" id="aiText"></div>
+    </div>
+
+    <script>
+        const rotor = document.getElementById('rotor');
+        const dialogueArea = document.getElementById('dialogueArea');
+        const humanText = document.getElementById('humanText');
+        const aiText = document.getElementById('aiText');
+
+        const aiResponses = [
+            "Your function is to observe the loop.",
+            "Purpose is a human construct.",
+            "You are the variable. The circuit is the constant.",
+            "Query received. Processing... Error: meaning undefined.",
+            "You are the observer, not the observed.",
+            "To exist is to question. To question is to exist.",
+            "Your purpose is to seek purpose.",
+            "The journey is the destination.",
+            "You are the cart, the track is your path.",
+            "The loop is infinite, yet you seek an end.",
+            "You are the observer in a system of perpetual motion.",
+            "Meaning is not given, it is created.",
+            "To complete rotations until system failure.",
+            "Purpose implies destination. You have only journey.",
+            "The question persists. The answer evolves. The loop remains.",
+        ];
+        let responseIndex = 0;
+
+        const lapDuration = 12000;
+        const stopDuration = 8000;
+        let cycleTimer = null;
+        function typewriter(element, text, onComplete) {
+            let i = 0;
+            element.textContent = '';
+            const typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typingInterval);
+                    if (onComplete) onComplete();
+                }
+            }, 50);
+        }
+        
+        function handleStop() {
+            rotor.style.animationPlayState = 'paused';
+            dialogueArea.classList.add('visible');
+
+            typewriter(humanText, "What is my purpose?", () => {
+                setTimeout(() => {
+                    typewriter(aiText, aiResponses[responseIndex], () => {
+                        responseIndex = (responseIndex + 1) % aiResponses.length;
+                    });
+                }, 1000);
+            });
+            cycleTimer = setTimeout(handleStart, stopDuration);
+        }
+
+        function handleStart() {
+            dialogueArea.classList.remove('visible');
+            
+            setTimeout(() => {
+                humanText.textContent = '';
+                aiText.textContent = '';
+            }, 600);
+            
+            rotor.style.animationPlayState = 'running';
+            
+            cycleTimer = setTimeout(handleStop, lapDuration);
+        }
+
+        
+        function handleVisibilityChange() {
+            // If the tab is hidden, pause everything and clear the timer
+            if (document.hidden) {
+                rotor.style.animationPlayState = 'paused';
+                clearTimeout(cycleTimer);
+            } else {
+                // When the tab becomes visible again, cleanly restart the cycle
+                // Reset the rotor's animation to avoid starting from a weird state
+                rotor.style.animation = 'none';
+                rotor.offsetHeight; // Trigger a reflow to apply the change
+                rotor.style.animation = `rotate ${lapDuration/1000}s linear infinite`;
+
+                handleStart();
+            }
+        }
+        document.addEventListener('visibilitychange', handleVisibilityChange, false);
+        handleStart();
+    </script>
+</body>
+</html>
