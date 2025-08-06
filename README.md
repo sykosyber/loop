@@ -29,7 +29,7 @@ The piece features a moody, dark aesthetic with a generative particle system and
 
 ### Live Demo
 
-**[You can see a live version of the project here.]**(Your-GitHub-Pages-Link-Goes-Here)
+**[You can find a live version of the project here.]**(https://sykosyber.github.io/loop/)
 
 ### Features
 
